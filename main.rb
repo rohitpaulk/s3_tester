@@ -13,7 +13,7 @@ ROOT_FOLDER_NAMES = [
 ]
 
 def create_items(s3_client, item_count)
-  item_count.to_i.times do |i|
+  item_count.to_i.times.pmap do |i|
     puts "Creating Object (#{i+1}/#{item_count})" if (i % 10).zero?
     uuid = SecureRandom.uuid
 
