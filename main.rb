@@ -4,6 +4,7 @@ Bundler.require(:default)
 require 'securerandom'
 
 BUCKET_NAME = "paul-test-big-bucket-source"
+TEMP_BUCKET_PREFIX = "temp-bucket"
 ROOT_FOLDER_NAMES = [
   "root_folder_1",
   "root_folder_2",
@@ -42,12 +43,18 @@ def get_item_count(s3_client)
   puts "Count: #{count}"
 end
 
+def sync_buckets_command(s3_client, bucket)
+  target_bucket_name = "#{TEMP_BUCKET_PREFIX}-#{bucket}"
+  puts "aws s3 sync s3://#{BUCKET_NAME} s3://#{target_bucket_name}"
+end
+
 command = ARGV.first
 unless command
   puts <<~USAGE
     Usage:
       ruby main.rb create_items 1000
       ruby main.rb get_item_count
+      ruby main.rb sync_buckets_command
   USAGE
 
   exit(1)
