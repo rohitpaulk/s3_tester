@@ -29,15 +29,16 @@ end
 
 def get_item_count(s3_client)
   count = 0
-  objects = s3_client.list_objects(bucket: BUCKET_NAME)
+  objects = s3_client.list_objects_v2(bucket: BUCKET_NAME)
   loop do
     count += objects.contents.count
 
-    next_marker = objects.next_marker
-    break unless next_marker
+    next_continuation_token = objects.next_continuation_token
+    break unless next_continuation_token
 
-    puts "Fetching next batch of objects"
-    objects = s3_client.list_objects(bucket: BUCKET_NAME, marker: next_marker)
+    puts "Fetching next batch of objects (count: #{count})"
+    objects = s3_client.list_objects_v2(bucket: BUCKET_NAME,
+                                        continuation_token: next_continuation_token)
   end
 
   puts "Count: #{count}"
