@@ -44,8 +44,24 @@ def get_item_count(s3_client)
 end
 
 def sync_buckets_command(s3_client, bucket)
-  target_bucket_name = "#{TEMP_BUCKET_PREFIX}-#{bucket}"
+  target_bucket_name = temp_bucket_name(bucket)
   puts "aws s3 sync s3://#{BUCKET_NAME} s3://#{target_bucket_name}"
+end
+
+def create_bucket(s3_client, bucket)
+  bucket = temp_bucket_name(bucket)
+  s3_client.create_bucket(bucket: bucket)
+  puts "Created #{bucket}"
+end
+
+def delete_bucket(s3_client, bucket)
+  bucket = temp_bucket_name(bucket)
+  s3_client.delete_bucket(bucket: bucket)
+  puts "Deleted #{bucket}"
+end
+
+def temp_bucket_name(bucket)
+  "#{TEMP_BUCKET_PREFIX}-#{bucket}"
 end
 
 command = ARGV.first
@@ -54,7 +70,9 @@ unless command
     Usage:
       ruby main.rb create_items 1000
       ruby main.rb get_item_count
-      ruby main.rb sync_buckets_command
+      ruby main.rb sync_buckets_command test1
+      ruby main.rb create_bucket test1
+      ruby main.rb delete_bucket test1
   USAGE
 
   exit(1)
